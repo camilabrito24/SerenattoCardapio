@@ -1,13 +1,37 @@
 <?php
 
     global $_pdo;
-    require "src/conexao-bd.php";
+
+use Modelo\Produto;
+
+require "src/conexao-bd.php";
+    require "src/Modelo/Produto.php";
 
     $_statement = $_pdo->query("SELECT * FROM produtos WHERE tipo = 'Café' ORDER BY preco;");
     $_produtos_cafe = $_statement->fetchAll(PDO::FETCH_ASSOC);
 
+    $_dados_cafe = array_map(function ($_cafe){
+        return new Produto($_cafe['id'],
+            $_cafe['tipo'],
+            $_cafe['nome'],
+            $_cafe['imagem'],
+            $_cafe['descricao'],
+            $_cafe['preco']
+        );
+    }, $_produtos_cafe);
+
     $_statement = $_pdo->query("SELECT * FROM produtos WHERE tipo = 'Almoço' ORDER BY preco;");
     $_produtos_almoco = $_statement->fetchAll(PDO::FETCH_ASSOC);
+
+    $_dados_almoco = array_map(function ($_almoco){
+        return new Produto($_almoco['id'],
+            $_almoco['tipo'],
+            $_almoco['nome'],
+            $_almoco['imagem'],
+            $_almoco['descricao'],
+            $_almoco['preco']
+        );
+    }, $_produtos_almoco);
 
 ?>
 <!doctype html>
@@ -40,14 +64,14 @@
                 <img class= "ornaments" src="img/ornaments-coffee.png" alt="ornaments">
             </div>
             <div class="container-cafe-manha-produtos">
-                <?php foreach ($_produtos_cafe as $produto): ?>
+                <?php foreach ($_dados_cafe as $produto): ?>
                 <div class="container-produto">
                     <div class="container-foto">
-                        <img src="<?= "img/".$produto['imagem'] ?>">
+                        <img src="<?= "img/".$produto->getImagem() ?>">
                     </div>
-                    <p><?= $produto['nome'] ?></p>
-                    <p><?= $produto['descricao'] ?></p>
-                    <p><?= "R$ " . $produto['preco'] ?></p>
+                    <p><?= $produto->getNome() ?></p>
+                    <p><?= $produto->getDescricao() ?></p>
+                    <p><?= "R$ " . number_format($produto->getPreco(),2) ?></p>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -58,14 +82,14 @@
                 <img class= "ornaments" src="img/ornaments-coffee.png" alt="ornaments">
             </div>
             <div class="container-almoco-produtos">
-                <?php foreach ($_produtos_almoco as $produto): ?>
+                <?php foreach ($_dados_almoco as $produto): ?>
                 <div class="container-produto">
                     <div class="container-foto">
-                        <img src="<?= "img/".$produto['imagem'] ?>">
+                        <img src="<?= "img/".$produto->getImagem() ?>">
                     </div>
-                    <p><?= $produto['nome'] ?></p>
-                    <p><?= $produto['descricao'] ?></p>
-                    <p><?= "R$ " . $produto['preco'] ?></p>
+                    <p><?= $produto->getNome() ?></p>
+                    <p><?= $produto->getDescricao() ?></p>
+                    <p><?= "R$ " . number_format($produto->getPreco(),2) ?></p>
                 </div>
                 <?php endforeach; ?>
             </div>
