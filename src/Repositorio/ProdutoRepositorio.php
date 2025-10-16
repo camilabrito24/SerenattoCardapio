@@ -13,19 +13,23 @@ class ProdutoRepositorio
         $this->_pdo = $_pdo;
     }
 
+    private function formarObjeto($dados)
+    {
+        return new Produto($dados['id'],
+            $dados['tipo'],
+            $dados['nome'],
+            $dados['descricao'],
+            $dados['imagem'],
+            $dados['preco']);
+    }
+
     public function opcoesCafe()
     {
         $_statement = $this->_pdo->query("SELECT * FROM produtos WHERE tipo = 'Café' ORDER BY preco;");
         $_produtos_cafe = $_statement->fetchAll(PDO::FETCH_ASSOC);
 
         $_dados_cafe = array_map(function ($_cafe){
-            return new Produto($_cafe['id'],
-                $_cafe['tipo'],
-                $_cafe['nome'],
-                $_cafe['imagem'],
-                $_cafe['descricao'],
-                $_cafe['preco']
-            );
+            return $this->formarObjeto($_cafe);
         }, $_produtos_cafe);
 
         return $_dados_cafe;
@@ -36,16 +40,22 @@ class ProdutoRepositorio
         $_produtos_almoco = $_statement->fetchAll(PDO::FETCH_ASSOC);
 
         $_dados_almoco = array_map(function ($_almoco){
-            return new Produto($_almoco['id'],
-                $_almoco['tipo'],
-                $_almoco['nome'],
-                $_almoco['imagem'],
-                $_almoco['descricao'],
-                $_almoco['preco']
-            );
+            return $this->formarObjeto($_almoco);
         }, $_produtos_almoco);
 
         return $_dados_almoco;
+    }
+
+    public function buscarTodasOpcoes(){
+        $_statement = $this->_pdo->query("SELECT * FROM produtos ORDER BY preco;");
+        $_produtos = $_statement->fetchAll(PDO::FETCH_ASSOC);
+
+
+        $_dados = array_map(function ($_produto){
+            return $this->formarObjeto($_produto);
+        }, $_produtos);
+
+        return $_dados;
     }
 
 }
